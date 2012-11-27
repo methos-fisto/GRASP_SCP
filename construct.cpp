@@ -1,12 +1,14 @@
-void construct(int**& mat_contrainte, int*& tab_couts, double& alpha, int*& solution, int& nbC, int& nbN){
+#include "construct.h"
 
-	int i, j, respect;
+void construct(int**& mat_contrainte, int*& tab_couts, const double& alpha, int*& solution, int& nbC, int& nbN){
+
+	int i, j, respect, presence;
 	bool admissible = false;
 	double* utilite;
 	double max;
-	set<int> a_traiter;
-	vector<int> RCL;
-	set<int>::iterator it;
+	std::set<int> a_traiter;
+	std::vector<int> RCL;
+	std::set<int>::iterator it;
 	for(i = 0; i < nbC; i++){
 		a_traiter.insert(i);
 	}
@@ -26,7 +28,8 @@ void construct(int**& mat_contrainte, int*& tab_couts, double& alpha, int*& solu
 					presence++;
 				}
 			}
-			utilite[j] = presence/tab_couts[j];
+			std::cout << j << " presence = " << presence << "\tcout = " << tab_couts[j] << "\tuti = " << (double) presence/ (double) tab_couts[j] << std::endl;
+			utilite[j] = (double) presence / (double) tab_couts[j];
 		}
 		//sélection
 		max = 0;
@@ -57,7 +60,7 @@ void construct(int**& mat_contrainte, int*& tab_couts, double& alpha, int*& solu
 		for( i = 0; i < nbC; i++){
 			respect = 0;
 			for( j = 0; j < nbN; j++){
-				respect += mat_contrainte[i][j]*solution[j]
+				respect += mat_contrainte[i][j]*solution[j];
 			}
 			
 			if(respect == 0){
