@@ -42,7 +42,7 @@ void parse(std::ifstream *&f, int &nbCnst, int &nbVars, int *&costs,  int **&cns
 				// Non-zero
 				cnst[i][j] = 1;
 				
-				if (--n >= 0) {
+				if (--n > 0) {
 					// Next non-zero
 					*f >> a;
 				}
