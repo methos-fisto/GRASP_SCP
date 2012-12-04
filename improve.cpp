@@ -1,6 +1,13 @@
 #include "improve.h"
 
-int min_z(const int nbVars, const int *sol, const int *costs) {
+/**
+ *	Calculates the value of the objective function for a given solution.
+ *
+ *	@param int  number of variables
+ *	@param int* costs array
+ *	@param int* selected solution
+ */
+int min_z(const int nbVars, const int *&costs, int *&sol) {
 	int z = 0;
 	
 	for (int i = 0; i < nbVars; i++) {
@@ -12,19 +19,72 @@ int min_z(const int nbVars, const int *sol, const int *costs) {
 	return z;
 }
 
-void 10exchange(int *sol, int i)
+/**
+ *	Determines a solution's admissibility by verifying each constraints is
+ *	respected.
+ *
+ *	@param int   number of constants
+ *	@param int   number of variables
+ *	@param int** constraint matrix
+ *	@param int*  solution
+ */
+bool admissible(const int nbVars, const int nbCnst, const int **&cnst, int *&sol)
 {
-	sol[i] = 0;
-}
-
-void 11exchange(int *sol, int i, int j)
-{
-	sol[i] = 0;
-	sol[j] = 1;
+	int i = 0, j = 0;
+	int respect = 0;
+	bool admissible = true;
+	
+	for (i = 0; i < nbCnst; i++) {
+		respect = 0;
+		
+		for (j = 0; j < nbVars; j++) {
+			respect += cnst[i][j] * sol[j];
+		}
+		
+		if (respect == 0) {
+			admissible = false;
+		}
+	}
+	
+	return admissible;
 }
 
 /**
- *	Improve locally our WSCP solution by working on neighbours of sel, with a
+ *	Interest function U(x), divides the number of appearance of a var in the
+ *	constraints matrix by its cost.
+ *
+ *	@param int   id of the variable
+ *	@param int   costs of the variable
+ *	@param int   nb of constraints
+ *	@param int** constraints matrix
+ */
+double interest(const int id, const int cost, const int nbCnst, const int **&cnst)
+{
+	int nb = 0, i = 0;
+	
+	for (i = 0; i < nbCnst; i++) {
+		nb += cnst[i][id];
+	}
+	
+	return (double) nb / cost;	
+}
+
+/**
+ *	Copies a solution in a holder.
+ *
+ *	@param int  number of vars
+ *	@param int* current solution
+ *	@param int* solution to modify
+ */
+void copy(const int nbVars, const int *sol, int *res)
+{
+	for (int i = 0; i < nbVars; i++) {
+		res[i] = sol[i];
+	}
+}
+
+/**
+ *	Improve locally our WSCP solution by working on neighbours of sol, with a
  *	1-0 exchange algorithm.
  *
  *	@param int   number of constraints
@@ -36,21 +96,26 @@ void 11exchange(int *sol, int i, int j)
  */
 int* improve_10(
 	  const int nbCnst, const int nbVars
-	, const int *costs, const int **cnst
-	, int *sol, const int z
+	, const int *&costs, const int **&cnst
+	, int *sol, const int first
 ) {
-	int i = 0, z = INT_MAX;
+	int i = 0, z = 0, current = first;
 	int *res = new int[nbVars];
+	
+	copy(nbVars, sol, res);
 	
 	// 1-0 exchange
 	for (i = 0; i < nbVars; i++) {
 		if (sol[i] == 1) {
 			sol[i] = 0;
 			
-			if (admissible(nbVars, nbCnst, cnst, sol)) {
-				for (j = 0; j < nbVars; j++) {
-					res[j] = sol[j];
-				}
+			z = min_z(nbVars, costs, sol);
+			
+			if (admissible(nbVars, nbCnst, cnst, sol)
+				&& z < current
+			) {
+				copy(nbVars, sol, res);
+				current = z;
 			}
 		
 			sol[i] = 1;
@@ -65,25 +130,40 @@ int* improve_10(
  *	
  *	@params cf. above
  */
-int* improve_10(
+int* improve_11(
 	  const int nbCnst, const int nbVars
 	, const int *costs, const int **cnst
-	, int *sol, const int z
+	, int *sol, const int first
 ) {
-	int i = 0;
+	int i = 0, j = 0, z = 0, current = first;
 	int *res = new int[nbVars];
 	
-	// 1-0 exchange
+	copy(nbVars, sol, res);
+	
+	// 1-1 exchange
 	for (i = 0; i < nbVars; i++) {
-		sol[i] = 0;
-		
-		if (min_z(nbVars, sol, costs) < z) {
+		if (sol[i] == 1) {
+			sol[i] = 0;
+			
 			for (j = 0; j < nbVars; j++) {
-				res[j] = sol[j];
+				if (sol[j] == 0) {
+					sol[j] = 1;
+					
+					z = min_z(nbVars, costs, sol);
+			
+					if (admissible(nbVars, nbCnst, cnst, sol)
+						&& z < current
+					) {
+						copy(nbVars, sol, res);
+						current = z;
+					}
+					
+					sol[j] = 0;
+				}
 			}
+			
+			sol[i] = 1;
 		}
-		
-		sol[i] = 1;
 	}
 	
 	return res;

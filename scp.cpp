@@ -1,36 +1,6 @@
 #include "scp.h"
 
 /**
- *	Determines a solution's admissibility by verifying each constraints is
- *	respected.
- *
- *	@param int       number of constants
- *	@param int       number of variables
- *	@param int**     constraint matrix
- *	@param int*      solution
- */
-bool admissible(const int nbVars, const int nbCnst, const int **cnst, const int *sol)
-{
-	int i = 0, j = 0;
-	int respect = 0;
-	bool admissible = true;
-	
-	for (i = 0; i < nbCnst; i++) {
-		respect = 0;
-		
-		for (j = 0; j < nbVars; j++) {
-			respect += cnst[i][j] * sol[j];
-		}
-		
-		if (respect == 0) {
-			admissible = false;
-		}
-	}
-	
-	return admissible;
-}
-
-/**
  *	Main.
  *
  *	@param int
@@ -76,11 +46,21 @@ int main(int argc, char** argv)
 			std::cout << cnst[i][j] << ' ';
 		}
 		std::cout << std::endl;
-
 	}
 	
-	double alpha = 0.75;
-	int*   solution = NULL;
+	double alpha = 0.0;
+	int    n     = 0;
+	char   in[4];
+	
+	std::cout << "Sélectionnez alpha : ";
+	std::cin >> in;
+	alpha = atof(in);
+	
+	std::cout << "Sélectionnez n : ";
+	std::cin >> in;
+	n = atoi(in);
+	
+	int *solution = NULL;
 	
 	construct(cnst, costs, alpha, solution, nbCnst, nbVars);
 	
