@@ -28,7 +28,7 @@ void construct(int**& mat_contrainte, int*& tab_couts, const double& alpha, int*
 					presence++;
 				}
 			}
-			std::cout << j << " presence = " << presence << "\tcout = " << tab_couts[j] << "\tuti = " << (double) presence/ (double) tab_couts[j] << std::endl;
+			std::cout << 'x' << j + 1 << "\tpresence = " << presence << "\tcout = " << tab_couts[j] << "\tuti = " << (double) presence/ (double) tab_couts[j] << std::endl;
 			utilite[j] = (double) presence / (double) tab_couts[j];
 		}
 		//sélection
@@ -38,10 +38,10 @@ void construct(int**& mat_contrainte, int*& tab_couts, const double& alpha, int*
 				max = utilite[j];
 			}
 		}
-		std::cout << "\nUmax = " << max;
+		std::cout << "Umax = " << max;
 		max = alpha*max;
-		std::cout << "\nseuil = " << max;
-		std::cout << "\nRCL = ";
+		std::cout << "\tSeuil = " << max;
+		std::cout << "\tRCL = ";
 		for(j = 0 ; j < nbN ;j++){
 			if(utilite[j] >= max){
 				RCL.push_back(j);
@@ -50,7 +50,7 @@ void construct(int**& mat_contrainte, int*& tab_couts, const double& alpha, int*
 		}
 		std::cout << "\nChoisi = ";
 		j = rand() % RCL.size();
-		std::cout << RCL.at(j);
+		std::cout << RCL.at(j) + 1 << '\n';
 		solution[RCL.at(j)]= 1;
 		RCL.clear();
 		delete[] utilite;
@@ -70,14 +70,16 @@ void construct(int**& mat_contrainte, int*& tab_couts, const double& alpha, int*
 		
 		if(a_traiter.size() == 0){
 			admissible = true;
+		} else {
+			std::cout << '\n';
 		}
 	}
 	
-	std::cout << "Premiere solution :\n";
+	std::cout << "Premiere solution : ";
 	max = 0;
 	for(j = 0; j < nbN; j++){
 		if(solution[j] == 1){
-			std::cout<< "x" << j+1 << "\n";
+			std::cout<< 'x' << j+1 << ',';
 			max += tab_couts[j];
 		}
 	}
