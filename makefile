@@ -1,10 +1,16 @@
-OPTS  = -Wall -Wextra -O3 -pipe
-FILES = *.cpp
+OPTS  = -Wall -Wextra -O3 -pipe -Iinc -g
+FILES = src/*.cpp
 OBJS  = *.o
 EXE   = scp
 
 launch : head
 	g++ $(OBJS) $(OPTS) -o $(EXE)
 
-head : *.h
+head : inc/*.h src/*.cpp
 	g++ $(FILES) -c $(OPTS)
+
+clean :
+	rm *.o scp
+
+cleaner :
+	rm *.o scp *~ */*~

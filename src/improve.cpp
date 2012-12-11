@@ -7,7 +7,7 @@
  *	@param int* costs array
  *	@param int* selected solution
  */
-int min_z(const int nbVars, const int *&costs, int *&sol) {
+int min_z(int nbVars, int *&costs, int *&sol) {
 	int z = 0;
 	
 	for (int i = 0; i < nbVars; i++) {
@@ -28,7 +28,7 @@ int min_z(const int nbVars, const int *&costs, int *&sol) {
  *	@param int** constraint matrix
  *	@param int*  solution
  */
-bool admissible(const int nbVars, const int nbCnst, const int **&cnst, int *&sol)
+bool admissible(int nbVars, int nbCnst, int **&cnst, int *&sol)
 {
 	int i = 0, j = 0;
 	int respect = 0;
@@ -58,7 +58,7 @@ bool admissible(const int nbVars, const int nbCnst, const int **&cnst, int *&sol
  *	@param int   nb of constraints
  *	@param int** constraints matrix
  */
-double interest(const int id, const int cost, const int nbCnst, const int **&cnst)
+double interest(int id, int cost, int nbCnst, int **&cnst)
 {
 	int nb = 0, i = 0;
 	
@@ -76,7 +76,7 @@ double interest(const int id, const int cost, const int nbCnst, const int **&cns
  *	@param int* current solution
  *	@param int* solution to modify
  */
-void copy(const int nbVars, const int *sol, int *res)
+void copy(int nbVars, int *sol, int *res)
 {
 	for (int i = 0; i < nbVars; i++) {
 		res[i] = sol[i];
@@ -95,9 +95,9 @@ void copy(const int nbVars, const int *sol, int *res)
  *	@param int   objective value with current solution
  */
 int* improve_10(
-	  const int nbCnst, const int nbVars
-	, const int *&costs, const int **&cnst
-	, int *sol, const int first
+	  int nbCnst, int nbVars
+	, int *&costs, int **&cnst
+	, int *sol, int first
 ) {
 	int i = 0, z = 0, current = first;
 	int *res = new int[nbVars];
@@ -131,9 +131,9 @@ int* improve_10(
  *	@params cf. above
  */
 int* improve_11(
-	  const int nbCnst, const int nbVars
-	, const int *costs, const int **cnst
-	, int *sol, const int first
+	  int nbCnst, int nbVars
+	, int *costs, int **cnst
+	, int *sol, int first
 ) {
 	int i = 0, j = 0, z = 0, current = first;
 	int *res = new int[nbVars];

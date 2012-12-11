@@ -32,6 +32,9 @@ int main(int argc, char** argv)
 	
 	parse(f, nbCnst, nbVars, costs, cnst);
 	
+	f->close();
+	
+	/*
 	int i = 0, j = 0;
 	
 	std::cout << "Costs : ";
@@ -47,6 +50,7 @@ int main(int argc, char** argv)
 		}
 		std::cout << std::endl;
 	}
+	*/
 	
 	double alpha = 0.0;
 	int    n     = 0;
@@ -56,13 +60,28 @@ int main(int argc, char** argv)
 	std::cin >> in;
 	alpha = atof(in);
 	
-	std::cout << "Sélectionnez n : ";
+	std::cout << "Sélectionnez n     : ";
 	std::cin >> in;
 	n = atoi(in);
 	
-	int *solution = NULL;
+	int id = 0;
+	Solution *sol = NULL;
+	std::ofstream *g1 = new std::ofstream("res/plot.dat");
 	
-	construct(cnst, costs, alpha, solution, nbCnst, nbVars);
+	while (++id <= n) {
+		sol = construct(cnst, costs, alpha, nbCnst, nbVars);
+	
+		*g1 << id << " " << sol->val() << '\n';
+	}
+	
+	g1->close();
+	
+	srand(time(NULL));
+	
+	Grasp grasp = Grasp(alpha, n, nbVars, nbCnst, costs, cnst);
+	// Solution *sol  = new Solution(nbVars, solution, costs);
+	
+	grasp.solve();
 	
 	return 1;
 }
