@@ -92,3 +92,18 @@ void Solution::set(const int i, const int val, int cost)
 		_val += cost;
 	}
 }
+
+std::ostream& operator << (std::ostream &os, const Solution &s)
+{
+	os << "Solution : ";
+	
+	for (int i = 0; i < s.size(); i++) {
+		if (s[i]) {
+			os << 'x' << i + 1 << ", ";
+		}
+	}
+	
+	os << "valeur : " << s.val();
+	
+	return os << '\n';
+}

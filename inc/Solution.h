@@ -2,6 +2,7 @@
 #define SOLUTION_H
 
 #include <cstddef>
+#include <iostream>
 
 class Solution
 {
@@ -25,5 +26,7 @@ class Solution
 		bool admissible(int, int, int**);
 		void set(const int i, const int val, int);
 };
+
+std::ostream& operator << (std::ostream&, const Solution&);
 
 #endif

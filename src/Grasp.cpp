@@ -19,63 +19,82 @@ Grasp::Grasp(double alpha, int n, int nbVars, int nbCnst, int *costs, int **cnst
 
 void Grasp::solve()
 {
+	int id = 0;
 	// s0  is our optimum
 	// sol is our current solution
-	Solution *sol = new Solution(_nbVars), *s0 = new Solution(_nbVars);
-		
+	Solution      *sol  = new Solution(_nbVars), s0;
+	std::ofstream *init = new std::ofstream(), *local = new std::ofstream();
+	
+	// Clear files because we append afterward
+	init->open("res/initial.dat");
+	init->close();
+	local->open("res/local.dat");
+	local->close();
+	
+	// First solution
+	sol = construct(_cnst, _costs, _a, _nbCnst, _nbVars);
+	s0  = *sol;
+	
 	do {
+		++id;
+		
 		// Construction
 		sol = construct(_cnst, _costs, _a, _nbCnst, _nbVars);
 		
-		if (sol->val() > s0->val()) {
-			delete s0;
-			s0 = sol;
-		}
+		// Plot different initial solutions
+		init->open("res/initial.dat", std::ios_base::app);
+		*init << id << '\t' << sol->val() << '\n';
+		init->close();
 		
 		// Improvement
 		switch (_strat) {
 			case S_10 :
-				sol = exchange_10(s0);
+				sol = exchange_10(sol);
 				break;
 			
 			case S_11 :
-				sol = exchange_10(s0);
+				sol = exchange_11(sol);
 				break;
 			
 			case S_10_11 :
-				sol = exchange_10(s0);
+				sol = exchange_10(sol);
+				sol = exchange_11(sol);
 				break;
 			
 			case S_11_10 :
-				sol = exchange_10(s0);
+				sol = exchange_11(sol);
+				sol = exchange_10(sol);
 				break;
 				
 			default :
 				throw "Unknown type in Grasp::solve().\n";
 		}
+		
+		// Value after local optimization
+		local->open("res/local.dat", std::ios_base::app);
+		*local << id << '\t' << sol->val() << '\n';
+		local->close();
 	
-		if (sol->val() > s0->val()) {
-			delete s0;
-			s0 = sol;
+		if (sol->val() < s0.val()) {
+			s0 = *sol;
 		}
-	} while (--_n >= 0);
+	} while (--_n > 0);
 	
+	std::cout << s0;
 }
 
 Solution* Grasp::exchange_10(Solution *sol)
 {
-	int i = 0, z = sol->val();
 	Solution *res = sol;
 	
 	// 1-0 exchange
-	for (i = 0; i < sol->size(); i++) {
+	for (int i = 0; i < sol->size(); i++) {
 		if (sol->at(i) == 1) {
 			sol->set(i, 0, _costs[i]);
 			
-			if (sol->admissible(_nbVars, _nbCnst, _cnst)
-				&& z < sol->val()
-			) {
+			if (sol->admissible(_nbVars, _nbCnst, _cnst)) {
 				res = sol;
+				std::cout << *res;
 			}
 		
 			sol->set(i, 1, _costs[i]);
@@ -104,6 +123,7 @@ Solution* Grasp::exchange_11(Solution *sol)
 						&& z < sol->val()
 					) {
 						res = sol;
+						z   = sol->val();
 					}
 					
 					sol->set(j, 0, _costs[j]);

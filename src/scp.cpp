@@ -64,6 +64,7 @@ int main(int argc, char** argv)
 	std::cin >> in;
 	n = atoi(in);
 	
+	/*
 	int id = 0;
 	Solution *sol = NULL;
 	std::ofstream *g1 = new std::ofstream("res/plot.dat");
@@ -75,6 +76,7 @@ int main(int argc, char** argv)
 	}
 	
 	g1->close();
+	*/
 	
 	srand(time(NULL));
 	

@@ -2,6 +2,7 @@
 #define GRASP_H
 
 #include <map>
+#include <fstream>
 
 #include "Solution.h"
 #include "RCL.h"
