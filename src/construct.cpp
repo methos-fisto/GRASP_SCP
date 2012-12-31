@@ -4,21 +4,20 @@ Solution* construct(
 	int**& mat_contrainte, int*& tab_couts
 	, const double& alpha, int& nbC, int& nbN
 ) {
-	int i, j, respect, presence;
+	int i = 0, j = 0, respect = 0, presence = 0;
 	bool admissible = false;
 	double* utilite;
-	double max;
+	double max = 0.0;
+	
 	std::set<int> a_traiter;
 	std::vector<int> RCL;
 	std::set<int>::iterator it;
 	
+	Solution* solution = new Solution(nbN);
+	
 	for(i = 0; i < nbC; i++){
 		a_traiter.insert(i);
 	}
-	
-	Solution* solution = new Solution(nbN);
-	
-	srand(time(NULL));
 	
 	while( !admissible ){
 		//utilité
@@ -82,7 +81,7 @@ Solution* construct(
 	
 	// std::cout << "Premiere solution : ";
 	max = solution->val();
-	// std::cout << "\nPour un cout de " << max << "\n";
+	// std::cout << "Pour un cout de " << max << "\n";
 	
 	return solution;
 }
