@@ -11,8 +11,6 @@ Grasp::Grasp(double alpha, int n, int nbVars, int nbCnst, int *costs, int **cnst
 	_costs  = costs;
 	_cnst   = cnst;
 	
-	_rcl    = new RCL();
-	
 	_type   = T_MAX;
 	_strat  = S_10;
 }
@@ -33,7 +31,6 @@ void Grasp::solve()
 	
 	// First solution
 	sol = construct(_cnst, _costs, _a, _nbCnst, _nbVars);
-	s0  = *sol;
 	
 	do {
 		++id;
@@ -75,36 +72,45 @@ void Grasp::solve()
 		*local << id << '\t' << sol->val() << '\n';
 		local->close();
 	
-		if (sol->val() < s0.val()) {
+		if (s0.val() == 0 || sol->val() < s0.val()) {
 			s0 = *sol;
 		}
+		
+		delete sol;
 	} while (--_n > 0);
 	
 	std::cout << s0;
 }
 
-Solution* Grasp::exchange_10(Solution *sol)
+Solution* Grasp::exchange_10(Solution *&sol)
 {
-	Solution *res = sol;
+	Solution *res = new Solution(sol->size());
 	
 	// 1-0 exchange
 	for (int i = 0; i < sol->size(); i++) {
 		if (sol->at(i) == 1) {
 			sol->set(i, 0, _costs[i]);
 			
-			if (sol->admissible(_nbVars, _nbCnst, _cnst)) {
-				res = sol;
-				std::cout << *res;
+			if (sol->admissible(_nbVars, _nbCnst, _cnst)
+				&& (res->val() == 0 || sol->val() < res->val())
+			) {
+				// We need to copy only the content
+				*res = *sol;
 			}
 		
 			sol->set(i, 1, _costs[i]);
 		}
 	}
 	
-	return res;
+	// No solution found
+	if (res->val() == 0) {
+		return sol;
+	} else {
+		return res;
+	}
 }
 
-Solution* Grasp::exchange_11(Solution *sol)
+Solution* Grasp::exchange_11(Solution *&sol)
 {
 	int i = 0, j = 0, z = sol->val();
 	Solution *res = sol;

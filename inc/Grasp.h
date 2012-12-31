@@ -18,7 +18,6 @@ class Grasp
 		int   *_costs;
 		int  **_cnst;
 		double _a;
-		RCL   *_rcl;
 		
 	public :
 		// Types for the restricted candidates list
@@ -30,8 +29,8 @@ class Grasp
 		
 		void solve();
 		
-		Solution* exchange_10(Solution*);
-		Solution* exchange_11(Solution*);
+		Solution* exchange_10(Solution*&);
+		Solution* exchange_11(Solution*&);
 		
 		double _interest(const int);
 };
