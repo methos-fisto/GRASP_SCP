@@ -26,6 +26,10 @@ Solution::Solution(int nbVars)
 	// Solution value
 	_val   = 0;
 	_sol   = new int[nbVars];
+	
+	for (int i = 0; i < nbVars; i++) {
+		_sol[i] = 0;
+	}
 }
 
 Solution::Solution()
