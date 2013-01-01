@@ -5,7 +5,6 @@
 #include <fstream>
 
 #include "Solution.h"
-#include "RCL.h"
 #include "construct.h"
 
 class Solution;
@@ -25,14 +24,12 @@ class Grasp
 		// Strategy for improving current solution
 		static const int S_10  = 0, S_11  = 1, S_10_11 = 2, S_11_10 = 3;
 	
-		Grasp(double, int, int, int, int*, int**);
+		Grasp(double, int, int, int, int, int*, int**);
 		
 		void solve(int);
 		
 		Solution* exchange_10(Solution*&);
 		Solution* exchange_11(Solution*&);
-		
-		double _interest(const int);
 };
 
 #endif

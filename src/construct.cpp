@@ -3,11 +3,12 @@
 Solution* construct(
 	int**& mat_contrainte, int*& tab_couts
 	, const double& alpha, int& nbC, int& nbN
+	, const int &type
 ) {
 	int i = 0, j = 0, respect = 0, presence = 0;
 	bool admissible = false;
-	double* utilite;
-	double max = 0.0;
+	double *utilite = new double[nbN];
+	double  umax    = 0.0, max = 0.0, min = DBL_MAX;
 	
 	std::set<int> a_traiter;
 	std::vector<int> RCL;
@@ -21,35 +22,49 @@ Solution* construct(
 	
 	while( !admissible ){
 		//utilité
-		utilite = new double[nbN];
+		// utilite = new double[nbN];
+		max     = 0.0;
+		min     = DBL_MAX;
+		
 		for(j = 0 ; j < nbN ;j++){
-			presence =0;
+			presence = 0;
+			
 			for(it = a_traiter.begin(); it != a_traiter.end(); it++){
 				i = *it;
 				if(mat_contrainte[i][j] == 1){
 					presence++;
 				}
 			}
+			
 			// std::cout << 'x' << j + 1 << "\tpresence = " << presence << "\tcout = " << tab_couts[j] << "\tuti = " << (double) presence/ (double) tab_couts[j] << std::endl;
 			utilite[j] = (double) presence / (double) tab_couts[j];
-		}
-		//sélection
-		max = 0;
-		for(j = 0 ; j < nbN ;j++){
-			if(utilite[j] > max){
+			
+			if (utilite[j] > max) {
 				max = utilite[j];
 			}
+			
+			if (utilite[j] < min) {
+				min = utilite[j];
+			}
 		}
+		//sélection
 		// std::cout << "Umax = " << max;
-		max = alpha*max;
+		
+		if (type == Grasp::T_MAX) {
+			umax = alpha * max;
+		} else { // type == Grasp::T_MIN
+			umax = min + alpha * (max - min);
+		}
+		
 		// std::cout << "\tSeuil = " << max;
 		// std::cout << "\tRCL = ";
-		for(j = 0 ; j < nbN ;j++){
-			if(utilite[j] >= max){
+		for(j = 0 ; j < nbN ;j++) {
+			if(utilite[j] >= umax) {
 				RCL.push_back(j);
 				// std::cout << j + 1 << " ";
 			}
 		}
+		
 		// std::cout << "\nChoisi = ";
 		j = rand() % RCL.size();
 		// std::cout << RCL.at(j) + 1 << '\n';
@@ -57,7 +72,6 @@ Solution* construct(
 		solution->set(i, 1, tab_couts[i]);
 		
 		RCL.clear();
-		delete[] utilite;
 		
 		//admissibilité
 		a_traiter.clear();

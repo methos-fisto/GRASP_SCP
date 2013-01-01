@@ -1,6 +1,6 @@
 #include "Grasp.h"
 
-Grasp::Grasp(double alpha, int n, int nbVars, int nbCnst, int *costs, int **cnst)
+Grasp::Grasp(double alpha, int n, int type, int nbVars, int nbCnst, int *costs, int **cnst)
 {
 	_n = n;
 	_a = alpha;
@@ -11,7 +11,7 @@ Grasp::Grasp(double alpha, int n, int nbVars, int nbCnst, int *costs, int **cnst
 	_costs  = costs;
 	_cnst   = cnst;
 	
-	_type   = T_MAX;
+	_type   = type;
 	_strat  = S_10;
 }
 
@@ -34,14 +34,11 @@ void Grasp::solve(int r)
 		init->close();
 	}
 	
-	// First solution
-	sol = construct(_cnst, _costs, _a, _nbCnst, _nbVars);
-	
 	do {
 		++id;
 		
 		// Construction
-		sol = construct(_cnst, _costs, _a, _nbCnst, _nbVars);
+		sol = construct(_cnst, _costs, _a, _nbCnst, _nbVars, _type);
 		
 		// Plot different initial solutions
 		if (r == 0) {

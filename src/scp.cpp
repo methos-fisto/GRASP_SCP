@@ -53,7 +53,6 @@ int main(int argc, char** argv)
 	srand(time(NULL));
 	
 	Grasp grasp = Grasp(alpha, n, t, nbVars, nbCnst, costs, cnst);
-	// Solution *sol  = new Solution(nbVars, solution, costs);
 	
 	for (int i = 0; i < 25; i++) {
 		grasp.solve(i);
