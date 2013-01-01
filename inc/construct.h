@@ -5,6 +5,7 @@
 #include <vector>
 #include <set>
 #include <stdlib.h>
+#include <float.h>
 
 #include "Solution.h"
 #include "time.h"

@@ -34,26 +34,8 @@ int main(int argc, char** argv)
 	
 	f->close();
 	
-	/*
-	int i = 0, j = 0;
-	
-	std::cout << "Costs : ";
-	for (j = 0; j < nbVars; j++) {
-		std::cout << costs[j] << ' ';
-	}
-	std::cout << std::endl;
-	
-	std::cout << "Constraints : " << std::endl;
-	for (i = 0; i < nbCnst; i++) {
-		for (j = 0; j < nbVars; j++) {
-			std::cout << cnst[i][j] << ' ';
-		}
-		std::cout << std::endl;
-	}
-	*/
-	
 	double alpha = 0.0;
-	int    n     = 0;
+	int    n     = 0, t = 0;
 	char   in[4];
 	
 	std::cout << "Sélectionnez alpha : ";
@@ -64,26 +46,18 @@ int main(int argc, char** argv)
 	std::cin >> in;
 	n = atoi(in);
 	
-	/*
-	int id = 0;
-	Solution *sol = NULL;
-	std::ofstream *g1 = new std::ofstream("res/plot.dat");
-	
-	while (++id <= n) {
-		sol = construct(cnst, costs, alpha, nbCnst, nbVars);
-	
-		*g1 << id << " " << sol->val() << '\n';
-	}
-	
-	g1->close();
-	*/
+	std::cout << "Sélectionnez le type (0 = max, 1 = min) : ";
+	std::cin >> in;
+	t = atoi(in);
 	
 	srand(time(NULL));
 	
-	Grasp grasp = Grasp(alpha, n, nbVars, nbCnst, costs, cnst);
+	Grasp grasp = Grasp(alpha, n, t, nbVars, nbCnst, costs, cnst);
 	// Solution *sol  = new Solution(nbVars, solution, costs);
 	
-	grasp.solve();
+	for (int i = 0; i < 25; i++) {
+		grasp.solve(i);
+	}
 	
 	return 1;
 }

@@ -15,19 +15,24 @@ Grasp::Grasp(double alpha, int n, int nbVars, int nbCnst, int *costs, int **cnst
 	_strat  = S_10;
 }
 
-void Grasp::solve()
+void Grasp::solve(int r)
 {
 	int id = 0;
 	// s0  is our optimum
 	// sol is our current solution
 	Solution      *sol  = new Solution(_nbVars), s0;
-	std::ofstream *init = new std::ofstream(), *local = new std::ofstream();
+	std::ofstream *init = new std::ofstream(), *local = new std::ofstream()
+	           , *final = new std::ofstream();
 	
-	// Clear files because we append afterward
-	init->open("res/initial.dat");
-	init->close();
-	local->open("res/local.dat");
-	local->close();
+	if (r == 0) {
+		// Clear files because we append afterward
+		init->open("res/initial.dat");
+		init->close();
+		local->open("res/local.dat");
+		local->close();
+		init->open("res/final.dat");
+		init->close();
+	}
 	
 	// First solution
 	sol = construct(_cnst, _costs, _a, _nbCnst, _nbVars);
@@ -39,9 +44,11 @@ void Grasp::solve()
 		sol = construct(_cnst, _costs, _a, _nbCnst, _nbVars);
 		
 		// Plot different initial solutions
-		init->open("res/initial.dat", std::ios_base::app);
-		*init << id << '\t' << sol->val() << '\n';
-		init->close();
+		if (r == 0) {
+			init->open("res/initial.dat", std::ios_base::app);
+			*init << id << '\t' << sol->val() << '\n';
+			init->close();
+		}
 		
 		// Improvement
 		switch (_strat) {
@@ -68,10 +75,12 @@ void Grasp::solve()
 		}
 		
 		// Value after local optimization
-		local->open("res/local.dat", std::ios_base::app);
-		*local << id << '\t' << sol->val() << '\n';
-		local->close();
-	
+		if (r == 0) {
+			local->open("res/local.dat", std::ios_base::app);
+			*local << id << '\t' << sol->val() << '\n';
+			local->close();
+		}
+		
 		if (s0.val() == 0 || sol->val() < s0.val()) {
 			s0 = *sol;
 		}
@@ -80,6 +89,10 @@ void Grasp::solve()
 	} while (--_n > 0);
 	
 	std::cout << s0;
+	
+	final->open("res/final.dat", std::ios_base::app);
+	*final << r << '\t' << s0.val() << '\n';
+	final->close();
 }
 
 Solution* Grasp::exchange_10(Solution *&sol)

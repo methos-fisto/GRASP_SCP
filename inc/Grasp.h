@@ -27,7 +27,7 @@ class Grasp
 	
 		Grasp(double, int, int, int, int*, int**);
 		
-		void solve();
+		void solve(int);
 		
 		Solution* exchange_10(Solution*&);
 		Solution* exchange_11(Solution*&);
