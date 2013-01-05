@@ -80,7 +80,7 @@ double Grasp::solve(int r)
 	int id = 0, min = INT_MAX, max = 0, sum = 0, n = _n;
 	// s0  is our optimum
 	// sol is our current solution
-	Solution      *sol  = new Solution(_nbVars), s0;
+	Solution      *sol  = new Solution(_nbVars), s0 = Solution(_nbVars);
 	std::ofstream *init = new std::ofstream(), *local = new std::ofstream()
 	           , *final = new std::ofstream();
 	
