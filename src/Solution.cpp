@@ -1,24 +1,5 @@
 #include "Solution.h"
 
-Solution::Solution(int nbVars, int *sol, int *costs)
-{
-	int i = 0;
-
-	_size = nbVars;
-	
-	// Solution value
-	_val   = 0;
-	_sol   = new int[nbVars];
-	
-	for (i = 0; i < nbVars; i++) {
-		_sol[i]   = sol[i];
-		
-		if (sol[i] == 1) {
-			_val += costs[i];
-		}
-	}
-}
-
 Solution::Solution(int nbVars)
 {
 	_size = nbVars;
@@ -30,13 +11,6 @@ Solution::Solution(int nbVars)
 	for (int i = 0; i < nbVars; i++) {
 		_sol[i] = 0;
 	}
-}
-
-Solution::Solution()
-{
-	_val  = 0;
-	_size = 0;
-	_sol  = NULL;
 }
 
 int Solution::val() const
