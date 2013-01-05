@@ -13,11 +13,71 @@ Grasp::Grasp(double alpha, int n, int type, int nbVars, int nbCnst, int *costs, 
 	
 	_type   = type;
 	_strat  = S_10;
+	
+	_alphas = new double[_STEP];
+	_probas = new double[_STEP];
+	
+	for (int i = 1; i < _STEP; i++) {
+		_alphas[i] = (1.0 / _STEP) * i;
+		_probas[i] = 1.0 / (_STEP - 1);
+	}
+	
+	_total = _STEP - 1;
 }
 
-void Grasp::solve(int r)
+double Grasp::alpha() const
 {
-	int id = 0;
+	return _a;
+}
+
+/****************************************
+******** Reactive GRASP methods *********
+****************************************/
+
+void Grasp::setAlpha(double alpha, double proba)
+{
+	// Dual index
+	int id = alpha * _STEP, i = 0;
+	
+	if (id > 0) {
+		_total      = 0.0;
+		_probas[id] = proba;
+	
+		for (i = 1; i < _STEP; i++) {
+			_total += _probas[i];
+		}
+		
+		_total *= _STEP;
+	}
+	
+	// std::cout << "Renew alpha = " << alpha << " (id = " << id << ") with proba = " << proba << '\n';
+	
+	_selectAlpha();
+}
+
+void Grasp::_selectAlpha()
+{
+	double limit = rand() / (RAND_MAX / _total + 1), r = 0.0;
+	int    i     = 1;
+	
+	while (r < limit && i < _STEP) {
+		_a = _alphas[i];
+		r += _probas[i] * _STEP;
+		++i;
+		
+		// std::cout << "\tTmp alpha = " << _a << " - r = " << r << '\n';
+	}
+	
+	// std::cout << "New alpha = " << _a << " (" << limit << " - " << _total << ")\n";
+}
+
+/****************************************
+*************** Resolution **************
+****************************************/
+
+double Grasp::solve(int r)
+{
+	int id = 0, min = INT_MAX, max = 0, sum = 0, n = _n;
 	// s0  is our optimum
 	// sol is our current solution
 	Solution      *sol  = new Solution(_nbVars), s0;
@@ -30,8 +90,8 @@ void Grasp::solve(int r)
 		init->close();
 		local->open("res/local.dat");
 		local->close();
-		init->open("res/final.dat");
-		init->close();
+		final->open("res/final.dat");
+		final->close();
 	}
 	
 	do {
@@ -50,21 +110,21 @@ void Grasp::solve(int r)
 		// Improvement
 		switch (_strat) {
 			case S_10 :
-				sol = exchange_10(sol);
+				sol = _exchange_10(sol);
 				break;
 			
 			case S_11 :
-				sol = exchange_11(sol);
+				sol = _exchange_11(sol);
 				break;
 			
 			case S_10_11 :
-				sol = exchange_10(sol);
-				sol = exchange_11(sol);
+				sol = _exchange_10(sol);
+				sol = _exchange_11(sol);
 				break;
 			
 			case S_11_10 :
-				sol = exchange_11(sol);
-				sol = exchange_10(sol);
+				sol = _exchange_11(sol);
+				sol = _exchange_10(sol);
 				break;
 				
 			default :
@@ -78,21 +138,34 @@ void Grasp::solve(int r)
 			local->close();
 		}
 		
-		if (s0.val() == 0 || sol->val() < s0.val()) {
+		if (sol->val() < min) {
+			min = sol->val();
+			
 			s0 = *sol;
 		}
 		
+		if (sol->val() > max) {
+			max = sol->val();
+		}
+		
+		sum += sol->val();
+		
 		delete sol;
-	} while (--_n > 0);
-	
-	std::cout << s0;
+	} while (--n > 0);
 	
 	final->open("res/final.dat", std::ios_base::app);
-	*final << r << '\t' << s0.val() << '\n';
+	*final << r << '\t' << min << '\n';
 	final->close();
+	
+	std::cout << "Solution avec un alpha = " << _a << '\n';
+	std::cout << s0 << '\n';
+	
+	// std::cout << "\t(" << (double) (sum / _n) << " - " << max << ") / (" << min << " - " << max << ")\n";
+	
+	return (double) ((sum / _n) - max) / (min - max);
 }
 
-Solution* Grasp::exchange_10(Solution *&sol)
+Solution* Grasp::_exchange_10(Solution *&sol)
 {
 	Solution *res = new Solution(sol->size());
 	
@@ -120,7 +193,7 @@ Solution* Grasp::exchange_10(Solution *&sol)
 	}
 }
 
-Solution* Grasp::exchange_11(Solution *&sol)
+Solution* Grasp::_exchange_11(Solution *&sol)
 {
 	int i = 0, j = 0, z = sol->val();
 	Solution *res = sol;
